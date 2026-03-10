@@ -14,7 +14,8 @@ from enum import Enum
 
 from ..config import Config
 from ..utils.logger import get_logger
-from .zep_entity_reader import ZepEntityReader, FilteredEntities
+from .zep_entity_reader import FilteredEntities
+from .memory_backend import get_entity_reader
 from .oasis_profile_generator import OasisProfileGenerator, OasisAgentProfile
 from .simulation_config_generator import SimulationConfigGenerator, SimulationParameters
 
@@ -272,7 +273,7 @@ class SimulationManager:
             if progress_callback:
                 progress_callback("reading", 0, "正在连接Zep图谱...")
             
-            reader = ZepEntityReader()
+            reader = get_entity_reader()
             
             if progress_callback:
                 progress_callback("reading", 30, "正在读取节点数据...")

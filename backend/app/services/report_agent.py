@@ -22,12 +22,12 @@ from ..config import Config
 from ..utils.llm_client import LLMClient
 from ..utils.logger import get_logger
 from .zep_tools import (
-    ZepToolsService, 
-    SearchResult, 
-    InsightForgeResult, 
+    SearchResult,
+    InsightForgeResult,
     PanoramaResult,
     InterviewResult
 )
+from .memory_backend import get_tools_service
 
 logger = get_logger('mirofish.report_agent')
 
@@ -881,12 +881,12 @@ class ReportAgent:
     MAX_TOOL_CALLS_PER_CHAT = 2
     
     def __init__(
-        self, 
+        self,
         graph_id: str,
         simulation_id: str,
         simulation_requirement: str,
         llm_client: Optional[LLMClient] = None,
-        zep_tools: Optional[ZepToolsService] = None
+        zep_tools=None
     ):
         """
         初始化Report Agent
@@ -903,7 +903,7 @@ class ReportAgent:
         self.simulation_requirement = simulation_requirement
         
         self.llm = llm_client or LLMClient()
-        self.zep_tools = zep_tools or ZepToolsService()
+        self.zep_tools = zep_tools or get_tools_service()
         
         # 工具定义
         self.tools = self._define_tools()
