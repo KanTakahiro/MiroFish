@@ -27,6 +27,10 @@ PyMuPDF>=1.24.0
 charset-normalizer>=3.0.0
 chardet>=5.0.0
 
+# ============= Graphiti OSS + Neo4j（MEMORY_BACKEND=graphiti 時使用）=============
+graphiti-core>=0.3.0
+neo4j>=5.0.0
+
 # ============= 工具库 =============
 # 环境变量加载
 python-dotenv>=1.0.0
