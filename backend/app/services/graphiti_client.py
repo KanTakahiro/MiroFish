@@ -28,17 +28,21 @@ async def create_graphiti():
     """
     from graphiti_core import Graphiti
     from graphiti_core.llm_client.openai_client import OpenAIClient
-    from graphiti_core.embedder.openai import OpenAIEmbedder, OpenAIEmbedderConfig
+    from graphiti_core.llm_client.config import LLMConfig
+    from graphiti_core.embedder.voyage import VoyageAIEmbedder, VoyageAIEmbedderConfig
 
     llm_client = OpenAIClient(
-        api_key=Config.LLM_API_KEY,
-        base_url=Config.LLM_BASE_URL,
-        model=Config.LLM_MODEL_NAME,
-    )
-    embedder = OpenAIEmbedder(
-        OpenAIEmbedderConfig(
+        config=LLMConfig(
             api_key=Config.LLM_API_KEY,
             base_url=Config.LLM_BASE_URL,
+            model=Config.LLM_MODEL_NAME,
+            small_model=Config.LLM_SMALL_MODEL_NAME,
+        )
+    )
+    embedder = VoyageAIEmbedder(
+        VoyageAIEmbedderConfig(
+            api_key=Config.VOYAGE_API_KEY,
+            embedding_model=Config.VOYAGE_EMBEDDING_MODEL,
         )
     )
     g = Graphiti(

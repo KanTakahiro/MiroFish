@@ -31,6 +31,11 @@ class Config:
     LLM_API_KEY = os.environ.get('LLM_API_KEY')
     LLM_BASE_URL = os.environ.get('LLM_BASE_URL', 'https://api.openai.com/v1')
     LLM_MODEL_NAME = os.environ.get('LLM_MODEL_NAME', 'gpt-4o-mini')
+    # 輕量任務專用模型（Graphiti 實體去重等），未設定時沿用 LLM_MODEL_NAME
+    LLM_SMALL_MODEL_NAME = os.environ.get('LLM_SMALL_MODEL_NAME') or os.environ.get('LLM_MODEL_NAME', 'gpt-4o-mini')
+    # Voyage AI Embedding 配置（Graphiti 使用）
+    VOYAGE_API_KEY = os.environ.get('VOYAGE_API_KEY')
+    VOYAGE_EMBEDDING_MODEL = os.environ.get('VOYAGE_EMBEDDING_MODEL', 'voyage-4-lite')
     
     # Zep配置
     ZEP_API_KEY = os.environ.get('ZEP_API_KEY')
