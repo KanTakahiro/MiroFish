@@ -122,9 +122,18 @@ LLM_API_KEY=your_api_key
 LLM_BASE_URL=https://dashscope.aliyuncs.com/compatible-mode/v1
 LLM_MODEL_NAME=qwen-plus
 
-# Zep Cloud Configuration
+# Memory backend selection
+# zep (default): Zep Cloud | graphiti: local Neo4j
+MEMORY_BACKEND=zep
+
+# Zep Cloud Configuration (required when MEMORY_BACKEND=zep)
 # Free monthly quota is sufficient for simple usage: https://app.getzep.com/
 ZEP_API_KEY=your_zep_api_key
+
+# Graphiti / Neo4j local configuration (required when MEMORY_BACKEND=graphiti)
+NEO4J_URI=bolt://localhost:7687
+NEO4J_USER=neo4j
+NEO4J_PASSWORD=mirofish-neo4j
 ```
 
 #### 2. Install Dependencies
@@ -162,6 +171,59 @@ npm run backend   # Start backend only
 npm run frontend  # Start frontend only
 ```
 
+**Use Graphiti local backend (optional):**
+
+The Graphiti backend requires Neo4j (with APOC plugin) installed and running natively on your machine.
+
+**Install Neo4j:**
+
+```bash
+# macOS (Homebrew)
+brew install neo4j
+
+# Linux (Debian/Ubuntu)
+# See official docs: https://neo4j.com/docs/operations-manual/current/installation/linux/
+
+# Windows
+# Download installer: https://neo4j.com/download/
+```
+
+**Install APOC Plugin (required):**
+
+```bash
+# macOS Homebrew paths:
+# plugins dir:  $(brew --prefix)/var/neo4j/plugins/
+# config file:  $(brew --prefix)/etc/neo4j/neo4j.conf
+
+# 1. Download the apoc-*.jar matching your Neo4j version from:
+#    https://github.com/neo4j/apoc/releases
+# 2. Place the jar file into the plugins/ directory
+# 3. Add the following line to neo4j.conf:
+#    dbms.security.procedures.unrestricted=apoc.*
+```
+
+**Set password and start:**
+
+```bash
+# Set the initial password before first start
+neo4j-admin dbms set-initial-password mirofish-neo4j
+
+# Start Neo4j
+brew services start neo4j   # macOS
+# or: neo4j start           # general
+
+# Neo4j Browser (optional, for debugging): http://localhost:7474
+```
+
+**Configure `.env`:**
+
+```env
+MEMORY_BACKEND=graphiti
+NEO4J_URI=bolt://localhost:7687
+NEO4J_USER=neo4j
+NEO4J_PASSWORD=mirofish-neo4j
+```
+
 ### Option 2: Docker Deployment
 
 ```bash
@@ -173,6 +235,9 @@ docker compose up -d
 ```
 
 Reads `.env` from root directory by default, maps ports `3000 (frontend) / 5001 (backend)`
+
+**Use Graphiti local backend (optional):**
+Docker deployment also requires Neo4j installed natively on the host machine (see the source deployment instructions above). Set `MEMORY_BACKEND=graphiti` and the `NEO4J_*` connection parameters in `.env`.
 
 > Mirror address for faster pulling is provided as comments in `docker-compose.yml`, replace if needed.
 

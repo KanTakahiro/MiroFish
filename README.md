@@ -122,9 +122,18 @@ LLM_API_KEY=your_api_key
 LLM_BASE_URL=https://dashscope.aliyuncs.com/compatible-mode/v1
 LLM_MODEL_NAME=qwen-plus
 
-# Zep Cloud 配置
+# 记忆后端选择
+# zep(默认)：Zep Cloud | graphiti：本地 Neo4j
+MEMORY_BACKEND=zep
+
+# Zep Cloud 配置（MEMORY_BACKEND=zep 时必填）
 # 每月免费额度即可支撑简单使用：https://app.getzep.com/
 ZEP_API_KEY=your_zep_api_key
+
+# Graphiti / Neo4j 本地配置（MEMORY_BACKEND=graphiti 时必填）
+NEO4J_URI=bolt://localhost:7687
+NEO4J_USER=neo4j
+NEO4J_PASSWORD=mirofish-neo4j
 ```
 
 #### 2. 安装依赖
@@ -162,6 +171,58 @@ npm run backend   # 仅启动后端
 npm run frontend  # 仅启动前端
 ```
 
+**使用 Graphiti 本地后端（可选）：**
+
+Graphiti 后端需要在本机安装并运行 Neo4j（含 APOC 插件）。
+
+**安装 Neo4j：**
+
+```bash
+# macOS（Homebrew）
+brew install neo4j
+
+# Linux（Debian/Ubuntu）
+# 参考官方文档：https://neo4j.com/docs/operations-manual/current/installation/linux/
+
+# Windows
+# 下载安装包：https://neo4j.com/download/
+```
+
+**安装 APOC 插件（必须）：**
+
+```bash
+# macOS Homebrew 路径
+# 插件目录：$(brew --prefix)/var/neo4j/plugins/
+# 配置文件：$(brew --prefix)/etc/neo4j/neo4j.conf
+
+# 1. 从 https://github.com/neo4j/apoc/releases 下载与 Neo4j 版本匹配的 apoc-*.jar
+# 2. 将 jar 文件放入 plugins/ 目录
+# 3. 在 neo4j.conf 中添加：
+#    dbms.security.procedures.unrestricted=apoc.*
+```
+
+**设置密码并启动：**
+
+```bash
+# 首次设置密码（在启动前执行）
+neo4j-admin dbms set-initial-password mirofish-neo4j
+
+# 启动 Neo4j
+brew services start neo4j   # macOS
+# 或：neo4j start           # 通用
+
+# Neo4j Browser（可选，用于调试）：http://localhost:7474
+```
+
+**配置 `.env`：**
+
+```env
+MEMORY_BACKEND=graphiti
+NEO4J_URI=bolt://localhost:7687
+NEO4J_USER=neo4j
+NEO4J_PASSWORD=mirofish-neo4j
+```
+
 ### 二、Docker 部署
 
 ```bash
@@ -173,6 +234,9 @@ docker compose up -d
 ```
 
 默认会读取根目录下的 `.env`，并映射端口 `3000（前端）/5001（后端）`
+
+**使用 Graphiti 本地后端（可选）：**
+Docker 部署方式下同样需要在宿主机原生安装 Neo4j（参考上方源码部署说明），并在 `.env` 中设置 `MEMORY_BACKEND=graphiti` 及 `NEO4J_*` 连接参数。
 
 > 在 `docker-compose.yml` 中已通过注释提供加速镜像地址，可按需替换
 
