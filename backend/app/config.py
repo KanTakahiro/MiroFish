@@ -34,6 +34,14 @@ class Config:
     
     # Zep配置
     ZEP_API_KEY = os.environ.get('ZEP_API_KEY')
+
+    # 記憶後端選擇（'zep' | 'graphiti'）
+    MEMORY_BACKEND = os.environ.get('MEMORY_BACKEND', 'zep')
+
+    # Neo4j 設定（MEMORY_BACKEND=graphiti 時使用）
+    NEO4J_URI = os.environ.get('NEO4J_URI', 'bolt://localhost:7687')
+    NEO4J_USER = os.environ.get('NEO4J_USER', 'neo4j')
+    NEO4J_PASSWORD = os.environ.get('NEO4J_PASSWORD', 'mirofish-neo4j')
     
     # 文件上传配置
     MAX_CONTENT_LENGTH = 50 * 1024 * 1024  # 50MB
@@ -69,7 +77,9 @@ class Config:
         errors = []
         if not cls.LLM_API_KEY:
             errors.append("LLM_API_KEY 未配置")
-        if not cls.ZEP_API_KEY:
-            errors.append("ZEP_API_KEY 未配置")
+        if cls.MEMORY_BACKEND == 'zep' and not cls.ZEP_API_KEY:
+            errors.append("ZEP_API_KEY 未配置（MEMORY_BACKEND=zep 時必填）")
+        if cls.MEMORY_BACKEND == 'graphiti' and not cls.NEO4J_PASSWORD:
+            errors.append("NEO4J_PASSWORD 未配置（MEMORY_BACKEND=graphiti 時必填）")
         return errors
 
